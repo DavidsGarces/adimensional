@@ -1,6 +1,7 @@
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.2.4.js" type="text/javascript"></script>
 <script type="text/javascript" src="js/ajax.js"></script>
 <script type="text/javascript" src="js/ajax-dynamic-list.js"></script>
+<link rel="stylesheet" type="text/css" href="css/css.css" />
 <style type="text/css">
 	
 	/* Big box with list of options */
@@ -38,7 +39,7 @@
 		display:inline;
 	}
 	
-	</style>	
+	</style>
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link href="css/fontawesome/css/all.css" rel="stylesheet">
 	<script src="js/bootstrap.min.js"></script>

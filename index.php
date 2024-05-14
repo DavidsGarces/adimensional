@@ -8,8 +8,8 @@
 		?>
 	</head>
 	<body>
-		<?
-			include_once('cabecera.php');
+        <?
+		include_once('cabecera.php');
 		?>	
 		<div>
 			<?
@@ -36,9 +36,9 @@
             if(isset($_REQUEST['autor'])) {
                 $autor = $_REQUEST['autor'];
             }
-             $numero=0;
+            $numero=0;
 			?>
-			<table class="table table-striped" style="margin: 10px; width: 99%;">
+			<table id="tabla_principal" class="table table-striped" style="margin: 10px; width: 99%;">
 				<tr>
 					<td colspan="6">
                         <form action="index.php" method="post">
@@ -78,6 +78,7 @@
 					<td>Ir</td>
 				</tr>		
 				<?
+				$lineas = array();
 				$sql = "SELECT * from entrevistas order by id DESC limit $inicio, $limit";	
 				if(isset($action) and $action=="search"){
 					$sql = "SELECT * from entrevistas where id like '".$buscar."' or tema like '%".$buscar."%' or nombre like '%".$buscar."%' limit $inicio, $limit";
@@ -86,7 +87,9 @@
 					$sql = "SELECT * from entrevistas where autores like '".$autor."' or (autores like '".$autor.",%' or autores like '%,".$autor."' or autores like '%,".$autor.",') limit $inicio, $limit";
 				}
 				$result=mysqli_query($con,$sql);	
-				while($datos=mysqli_fetch_assoc($result)){ ?>
+				while($datos=mysqli_fetch_assoc($result)){
+					$lineas[]=array('autores'=>$datos['autores'], 'date'=>$datos['date'], 'tema'=>$datos['tema'], 'id'=>$datos['id']);
+				    ?>
 					<tr>
 						<td><?=$datos['id'];?></td>
 						<td>
@@ -98,24 +101,24 @@
 						<td><?=$datos['date'];?></td>
 						<td>
 							<?
-								$autoress="";
-								$porciones = explode(",", $datos['autores']);
-								$numeros=count($porciones);
-								for ($i = 0; $i < $numeros; $i++) {
-									$sql2 = "SELECT * from autores where id='".$porciones[$i]."'";	
-									$result2=mysqli_query($con,$sql2);	
-									while($datos2=mysqli_fetch_assoc($result2)){ 
-										?>
-										<form action="index.php" method="post">	
-											<input type="hidden" name="action" id="action" value="autores">
-											<input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">	
-											<?
-											echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
-											?>
-										</form>
-										<?
-									}
-								}					
+                            $autoress="";
+                            $porciones = explode(",", $datos['autores']);
+                            $numeros=count($porciones);
+                            for ($i = 0; $i < $numeros; $i++) {
+                                $sql2 = "SELECT * from autores where id='".$porciones[$i]."'";
+                                $result2=mysqli_query($con,$sql2);
+                                while($datos2=mysqli_fetch_assoc($result2)){
+                                    ?>
+                                    <form action="index.php" method="post">
+                                        <input type="hidden" name="action" id="action" value="autores">
+                                        <input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">
+                                        <?
+                                        echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
+                                        ?>
+                                    </form>
+                                    <?
+                                }
+                            }
 							?>
 						</td>		
 						<td>
@@ -235,4 +238,66 @@
 					</td>
 				</tr>
 			</table>
-		</div>
+            <div id="tabla_principal_movil" style="margin-top: 10px; width: 99%; text-align: center;">
+                <div>
+                    <div>
+                        <form action="index.php" method="post">
+                            <input type="hidden" id="action" name="action" value="search">
+                            <input type="text" name="buscar" id="buscar">
+                            <button type="submit" class="btn btn-primary" style="vertical-align: baseline;"><i class="fas fa-search" style="margin-right: 5px;"></i> Buscar</button>
+                        </form>
+                    </div>
+                </div>
+                <table class="table" style="margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th scope="col">Tema</th>
+                            <th scope="col">Emisión</th>
+                            <th scope="col">Autores</th>
+                        </tr>
+                    </thead>
+                    <?
+	                $numer=0;
+	                foreach ($lineas as $key => $row) {
+                        ?>
+                        <tbody>
+                            <tr>
+                                <td style="width: 33%; padding: 0px;">
+                                    <form action="programas.php" method="post">
+                                        <input type="hidden" name="programa" id="programa" value="<?=$lineas[$numer]['id'];?>">
+                                        <button type="submit" class="btn btn-link"><?=$lineas[$numer]['tema'];?></button>
+                                    </form>
+                                </td>
+                                <td style="width: 33%; padding: 0px;">
+                                   <?=$lineas[$numer]['date'];?>
+                                </td>
+                                <td style="width: 33%; padding: 0px;">
+	                                <?
+                                    $autoress="";
+                                    $porciones = explode(",", $lineas[$numer]['autores']);
+                                    $numeros=count($porciones);
+                                    for ($i = 0; $i < $numeros; $i++) {
+                                        $sql2 = "SELECT * from autores where id='".$porciones[$i]."'";
+                                        $result2=mysqli_query($con,$sql2);
+                                        while($datos2=mysqli_fetch_assoc($result2)){
+                                            ?>
+                                            <form action="index.php" method="post">
+                                                <input type="hidden" name="action" id="action" value="autores">
+                                                <input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">
+                                                <?
+                                                    echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
+                                                ?>
+                                            </form>
+                                            <?
+                                        }
+                                    }
+	                                ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <?
+		                $numer++;
+				    }
+				?>
+                </table>
+            </div>
