@@ -1,0 +1,10 @@
+body{
+    font-family: 'Open Sans', sans-serif;
+    color: #3c3c3c;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+@media (max-width: 360px) {
+    #tabla_principal { display: none; }
+    #tabla_principal_movil { display: block; }
+}
