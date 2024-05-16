@@ -40,13 +40,8 @@
 			?>
 			<table id="tabla_principal" class="table table-striped" style="margin: 10px; width: 99%;">
 				<tr>
-					<td colspan="6">
-                        <form action="index.php" method="post">
-                            <input type="hidden" id="action" name="action" value="search">
-                            <i class="fas fa-search" style="margin-right: 5px;"></i><input type="text" name="buscar" id="buscar">
-                            <button type="submit" class="btn btn-primary">Buscar</button>
-                        </form>
-					</td>
+                    <td colspan="4" style="width: 100%; background-color: white; border: 0px;">
+ 					</td>
 				</tr>
 				<?php
 				$limit=10;
@@ -68,8 +63,13 @@
 				   $inicio = ($pagina - 1) * $limit;
 				}
 				$total_paginas = ceil($numero / $limit);
+				if($total_paginas>10){
+					$total_paginas=10;
+                }
 				?>
-				<tr><td colspan="6"><b>(<?=$numero;?>)</b> Numero de programas</td></tr>
+				<tr>
+                    <td colspan="6"><b>(<?=$numero;?>)</b> Programas</td>
+                </tr>
 				<tr>
 					<td>Id</td>
 					<td style="width: 500px;">Tema</td>
@@ -87,22 +87,25 @@
 					$sql = "SELECT * from entrevistas where autores like '".$autor."' or (autores like '".$autor.",%' or autores like '%,".$autor."' or autores like '%,".$autor.",') limit $inicio, $limit";
 				}
 				$result=mysqli_query($con,$sql);	
-				while($datos=mysqli_fetch_assoc($result)){
-					$lineas[]=array('autores'=>$datos['autores'], 'date'=>$datos['date'], 'tema'=>$datos['tema'], 'id'=>$datos['id']);
+				while($datos=mysqli_fetch_assoc($result)) {
+					$lineas[] = array('autores' => $datos['autores'], 'date' => $datos['date'], 'tema' => $datos['tema'], 'id' => $datos['id']);
+				}
+                $numer=0;
+                foreach ($lineas as $key => $row) {
 				    ?>
 					<tr>
-						<td><?=$datos['id'];?></td>
+						<td><?=$lineas[$numer]['id'];?></td>
 						<td>
 							<form action="programas.php" method="post">
-								<input type="hidden" name="programa" id="programa" value="<?=$datos['id'];?>">	
-								<button type="submit" class="btn btn-link"><?=$datos['tema'];?></button>
+								<input type="hidden" name="programa" id="programa" value="<?=$lineas[$numer]['id'];?>">
+								<button type="submit" class="btn btn-link"><?=$lineas[$numer]['tema'];?></button>
 							</form>
 						</td>
-						<td><?=$datos['date'];?></td>
+						<td><?=$lineas[$numer]['date'];?></td>
 						<td>
 							<?
                             $autoress="";
-                            $porciones = explode(",", $datos['autores']);
+                            $porciones = explode(",", $lineas[$numer]['autores']);
                             $numeros=count($porciones);
                             for ($i = 0; $i < $numeros; $i++) {
                                 $sql2 = "SELECT * from autores where id='".$porciones[$i]."'";
@@ -123,12 +126,13 @@
 						</td>		
 						<td>
 							<form action="programas.php" method="post">
-								<input type="hidden" name="programa" id="programa" value="<?=$datos['id'];?>">	
+								<input type="hidden" name="programa" id="programa" value="<?=$lineas[$numer]['id'];?>">
 								<button type="submit" class="btn btn-success"><i class="fas fa-external-link-alt"></i></button>
 							</form>
 						</td>			
 					</tr>
 					<?
+	                $numer++;
 				}
 				?>
 				<tr>
@@ -166,7 +170,7 @@
 								</li>
 								<?
 								}
-								  for ($i=1;$i<=$total_paginas;$i++) {
+								for ($i=1;$i<=$total_paginas;$i++) {
 									 if ($pagina == $i){
 										//si muestro el índice de la página actual, no coloco enlace
 										?>
@@ -239,40 +243,47 @@
 				</tr>
 			</table>
             <div id="tabla_principal_movil" style="margin-top: 10px; width: 99%; text-align: center;">
-                <div>
-                    <div>
-                        <form action="index.php" method="post">
-                            <input type="hidden" id="action" name="action" value="search">
-                            <input type="text" name="buscar" id="buscar">
-                            <button type="submit" class="btn btn-primary" style="vertical-align: baseline;"><i class="fas fa-search" style="margin-right: 5px;"></i> Buscar</button>
-                        </form>
-                    </div>
+                <div style="text-align: left; margin-left: 10px;">
+                    <?
+                    if(isset($autor)){
+	                    $sql_autor = "SELECT nombre from autores where id='".$autor."'";
+	                    $result2=mysqli_query($con,$sql_autor);
+	                    list($nombre_autor) = mysqli_fetch_array($result2);
+                        ?>
+                        Programas con : <b><?=$nombre_autor;?></b>
+                        <?
+                    }else{
+                        ?>
+                        <b>(<?=$numero;?>)</b> Programas
+                        <?
+                    }
+                    ?>
                 </div>
-                <table class="table" style="margin-top: 10px;">
+                <table class="table" style="margin-top: 10px; width: 100%; display: inline-block;">
                     <thead>
-                        <tr>
+                        <tr style="width: 360px;">
                             <th scope="col">Tema</th>
                             <th scope="col">Emisión</th>
                             <th scope="col">Autores</th>
                         </tr>
                     </thead>
-                    <?
-	                $numer=0;
-	                foreach ($lineas as $key => $row) {
-                        ?>
-                        <tbody>
+                    <tbody>
+                        <?
+                        $numer=0;
+                        foreach ($lineas as $key => $row) {
+                            ?>
                             <tr>
                                 <td style="width: 33%; padding: 0px;">
                                     <form action="programas.php" method="post">
                                         <input type="hidden" name="programa" id="programa" value="<?=$lineas[$numer]['id'];?>">
-                                        <button type="submit" class="btn btn-link"><?=$lineas[$numer]['tema'];?></button>
+                                        <button type="submit" class="btn btn-link" style="text-align: left;"><?=$lineas[$numer]['tema'];?></button>
                                     </form>
                                 </td>
                                 <td style="width: 33%; padding: 0px;">
                                    <?=$lineas[$numer]['date'];?>
                                 </td>
                                 <td style="width: 33%; padding: 0px;">
-	                                <?
+                                    <?
                                     $autoress="";
                                     $porciones = explode(",", $lineas[$numer]['autores']);
                                     $numeros=count($porciones);
@@ -285,19 +296,127 @@
                                                 <input type="hidden" name="action" id="action" value="autores">
                                                 <input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">
                                                 <?
-                                                    echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
+                                                echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
                                                 ?>
                                             </form>
                                             <?
                                         }
                                     }
-	                                ?>
+                                    ?>
                                 </td>
                             </tr>
-                        </tbody>
-                        <?
-		                $numer++;
-				    }
-				?>
+                            <?
+                            $numer++;
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <table class="table" style="margin-top: 10px; width: 100%; display: inline-block; margin-left: -40px;">
+                    <tr>
+                        <td style="text-align: center;" colspan="3">
+                            <div>
+				                <?
+                                if ($total_paginas > 1) {
+                                    ?>
+                                    <nav aria-label="Page navigation example">
+                                        <ul class="pagination justify-content-center" style="width: 360px;">
+                                            <li class="page-item">
+                                                <?
+                                                if ($pagina != 1){
+                                                ?>
+                                                <form action="index.php" method="post">
+                                                    <?
+                                                    if(isset($search)){ ?>
+                                                        <input type="hidden" name="action" id="action" value="search">
+                                                    <? }
+                                                    if(isset($pagina)){ ?>
+                                                        <input type="hidden" name="pagina" id="pagina" value="<?=$i;?>">
+                                                    <? }
+                                                    if(isset($buscar)){ ?>
+                                                        <input type="hidden" name="buscar" id="buscar" value="<?=$buscar;?>">
+                                                    <? }
+                                                    if(isset($action)){ ?>
+                                                        <input type="hidden" name="action" id="action" value="<?=$action;?>">
+                                                    <? }
+                                                    if(isset($autor)){ ?>
+                                                        <input type="hidden" name="autor" id="autor" value="<?=$autor;?>">
+                                                    <? }
+                                                    ?>
+                                                    <button type="submit" class="page-link" style="padding: 10px;">&laquo;</button>
+                                                </form>
+                                            </li>
+                                            <?
+                                                }
+                                                for ($i=1;$i<=$total_paginas;$i++) {
+                                                    if ($pagina == $i){
+                                                        //si muestro el índice de la página actual, no coloco enlace
+                                                        ?>
+                                                        <li class="page-item disabled">
+                                                            <a class="page-link" href="#" tabindex="-1"><?=$i;?></a>
+                                                        </li>
+                                                        <?
+                                                    }else{
+                                                        //si el índice no corresponde con la página mostrada actualmente,
+                                                        //coloco el enlace para ir a esa página
+                                                        ?>
+                                                        <form action="index.php" method="post">
+                                                            <?
+                                                                if(isset($search)){ ?>
+                                                                    <input type="hidden" name="action" id="action" value="search">
+                                                                <? }
+                                                                if(isset($pagina)){ ?>
+                                                                    <input type="hidden" name="pagina" id="pagina" value="<?=$i;?>">
+                                                                <? }
+                                                                if(isset($buscar)){ ?>
+                                                                    <input type="hidden" name="buscar" id="buscar" value="<?=$buscar;?>">
+                                                                <? }
+                                                                if(isset($action)){ ?>
+                                                                    <input type="hidden" name="action" id="action" value="<?=$action;?>">
+                                                                <? }
+                                                                if(isset($autor)){ ?>
+                                                                    <input type="hidden" name="autor" id="autor" value="<?=$autor;?>">
+                                                                <? }
+                                                            ?>
+                                                            <button type="submit" class="page-link" style="padding: 10px;"><?=$i;?></button>
+                                                        </form>
+                                                        <?
+                                                    }
+                                                }
+                                            ?>
+                                            <li class="page-item">
+                                                <?  if ($pagina != $total_paginas){
+                                                    $i=($i-1);
+                                                ?>
+                                                <form action="index.php" method="post">
+                                                    <?
+                                                        if(isset($search)){ ?>
+                                                            <input type="hidden" name="action" id="action" value="search">
+                                                        <? }
+                                                        if(isset($pagina)){ ?>
+                                                            <input type="hidden" name="pagina" id="pagina" value="<?=$i;?>">
+                                                        <? }
+                                                        if(isset($buscar)){ ?>
+                                                            <input type="hidden" name="buscar" id="buscar" value="<?=$buscar;?>">
+                                                        <? }
+                                                        if(isset($action)){ ?>
+                                                            <input type="hidden" name="action" id="action" value="<?=$action;?>">
+                                                        <? }
+                                                        if(isset($autor)){ ?>
+                                                            <input type="hidden" name="autor" id="autor" value="<?=$autor;?>">
+                                                        <? }
+                                                    ?>
+                                                    <button type="submit" class="page-link" style="padding: 10px;">&raquo;</button>
+                                                </form>
+                                            </li>
+                                        <? } ?>
+                                        </ul>
+                                    </nav>
+                                    <?
+                                    //echo "pagina $pagina total_paginas $total_paginas<br>";
+					                }
+				                ?>
+                            </div>
+                        </td>
+                    </tr>
                 </table>
             </div>
