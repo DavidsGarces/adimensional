@@ -15,26 +15,30 @@
 			<?
             //print_r($_REQUEST);
 			if(isset($_REQUEST['pagina'])){
-				$pagina=$_REQUEST['pagina'];
+				$pagina = mysqli_real_escape_string($conn, $_POST['pagina']);
 			}
             if(isset($_REQUEST['search'])) {
-                $search = $_REQUEST['search'];
+	            $search = mysqli_real_escape_string($conn, $_POST['search']);
             }
             if(isset($_REQUEST['tema'])) {
-                $tema = $_REQUEST['tema'];
+	            $tema = mysqli_real_escape_string($conn, $_POST['tema']);
             }
             if(isset($_REQUEST['id'])) {
-                $id = $_REQUEST['id'];
+                if(is_numeric($_REQUEST['id'])){
+	                $id = mysqli_real_escape_string($conn, $_POST['id']);
+                }
             }
             if(isset($_REQUEST['action'])) {
-                $action = $_REQUEST['action'];
+	            $action = mysqli_real_escape_string($conn, $_POST['action']);
             }
 			if(isset($_REQUEST['buscar'])){
 				$buscar=$_REQUEST['buscar'];
 				$buscar = mysqli_real_escape_string($conn, $buscar);
 			}
             if(isset($_REQUEST['autor'])) {
-                $autor = $_REQUEST['autor'];
+				if(is_numeric($_REQUEST['autor'])){
+		            $autor = mysqli_real_escape_string($conn, $_POST['autor']);
+	            }
             }
             $numero=0;
 			?>

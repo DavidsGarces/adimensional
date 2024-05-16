@@ -1,11 +1,14 @@
 <?
-
-if(isset($_GET['getCountriesByLetters']) && isset($_GET['letters'])){
-	$letters = $_GET['letters'];
+echo "a";
+include('conexion.php');
+echo "b";
+if(isset($_REQUEST['getCatsByLetters']) && isset($_REQUEST['letters'])){
+	echo "dentro<br>";
+	$letters = $_REQUEST['letters'];
 	$letters = preg_replace("/[^a-z0-9 ]/si","",$letters);
-	$res = mysql_query("select id, nombre from autores where (nombre like '%".$letters."%')") or die(mysql_error());
-	#echo "1###select ID,countryName from ajax_countries where countryName like '".$letters."%'|";
-	while($inf = mysql_fetch_array($res)){
+	$sql = "SELECT * from autores where (nombre like '%".$letters."%')";
+	$result=mysqli_query($con,$sql);
+	while($inf = mysqli_fetch_array($result)){
 		echo $inf["id"]."###".$inf["nombre"]."|";
 	}	
 }

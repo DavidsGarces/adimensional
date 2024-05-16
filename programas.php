@@ -11,7 +11,7 @@
 		<?
 		include_once('cargas.php');
 		if(isset($_REQUEST['action'])) {
-            $action = $_REQUEST['action'];
+			$action = mysqli_real_escape_string($conn, $_REQUEST['action']);
         }
 		if(isset($action) and $action=="comentar"){
 			$recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
@@ -19,24 +19,22 @@
 			$recaptcha_response = $_POST['recaptcha_response']; 
 			$recaptcha = file_get_contents($recaptcha_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response); 
 			$recaptcha = json_decode($recaptcha); 
-
 			if($recaptcha->score >= 0.7){
-				$nombre_comentario=$_REQUEST['nombre_comentario'];	
-				$comentario=$_REQUEST['comentario'];			
-				$respondea=$_REQUEST['respondea'];						
+				$nombre_comentario = mysqli_real_escape_string($conn, $_REQUEST['nombre_comentario']);
+				$comentario = mysqli_real_escape_string($conn, $_REQUEST['comentario']);
+				$respondea = mysqli_real_escape_string($conn, $_REQUEST['respondea']);
 				$sql_add_comentarios = "INSERT INTO comentarios SET autor='".$nombre_comentario."', comentario='".$comentario."', entrevista='".$programa."', responde=''";	
 				$result_comentarios=mysqli_query($con,$sql_add_comentarios);	
 				$okcomentario=1;
-			  // código para procesar los campos y enviar el form
+			    // código para procesar los campos y enviar el form
 
 			} else {
 				$okcomentario=0;			
-			  // código para lanzar aviso de error en el envío
-
-			}		
+			    // código para lanzar aviso de error en el envío
+			}
 		}
 		?>
-	   <script src='https://www.google.com/recaptcha/api.js?render=6LeUw7gZAAAAAMpNyjxeRk8yacoeoiQTisXeg-yP'> 
+	    <script src='https://www.google.com/recaptcha/api.js?render=6LeUw7gZAAAAAMpNyjxeRk8yacoeoiQTisXeg-yP'>
 		</script>
 		<script>
             grecaptcha.ready(function() {
@@ -49,7 +47,7 @@
 	</head>
 	<body>
 		<?
-			include_once('cabecera.php');
+		include_once('cabecera.php');
 		?>
 		<div class="container-fluid">
 			<table class="table table-striped" style="margin: 10px; width: 99%;">
@@ -103,24 +101,24 @@
 						</td>
 						<td>
 							<?
-								$autoress="";
-								$porciones = explode(",", $datos['autores']);
-								$numeros=count($porciones);
-								for ($i = 0; $i < $numeros; $i++) {
-									$sql2 = "SELECT * from autores where id='".$porciones[$i]."'";	
-									$result2=mysqli_query($con,$sql2);	
-									while($datos2=mysqli_fetch_assoc($result2)){ 
-										?>
-										<form action="index.php" method="post">	
-											<input type="hidden" name="action" id="action" value="autores">
-											<input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">	
-											<?
-											echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
-											?>
-										</form>
-										<?
-									}
-								}					
+                            $autoress="";
+                            $porciones = explode(",", $datos['autores']);
+                            $numeros=count($porciones);
+                            for ($i = 0; $i < $numeros; $i++) {
+                                $sql2 = "SELECT * from autores where id='".$porciones[$i]."'";
+                                $result2=mysqli_query($con,$sql2);
+                                while($datos2=mysqli_fetch_assoc($result2)){
+                                    ?>
+                                    <form action="index.php" method="post">
+                                        <input type="hidden" name="action" id="action" value="autores">
+                                        <input type="hidden" id="autor" name="autor" value="<?=$porciones[$i];?>">
+                                        <?
+                                        echo "<button type=\"submit\" class=\"btn btn-light\" style='margin-right: 5px;'><i class=\"far fa-user\" style='margin-right: 5px;'></i>".$datos2['nombre']."</button>";
+                                        ?>
+                                    </form>
+                                    <?
+                                }
+                            }
 							?>
 						</td>
 					</tr>
@@ -133,7 +131,7 @@
 								<i class="fas fa-headphones" style="font-size: 45px; margin-right: 10px;" alt="Escuchar" title="Escuchar"></i>
 							</td>
 							<td>
-								<audio controls="controls" src="programas/<?=$datos['id'];?>.mp3">
+								<audio style="width: 180px;" controls="controls" src="programas/<?=$datos['id'];?>.mp3">
 									Your browser does not support the HTML5 Audio element.
 								</audio>						
 							</td>
@@ -161,11 +159,11 @@
 								<i class="far fa-comments" style="font-size: 45px; margin-right: 10px;" alt="Comentarios" title="Comentarios"></i>
 							</td>
 							<td>
-									<?
-									$sql2 = "SELECT * from comentarios where entrevista='".$datos['id']."' and revisado='1'";							
-									$result2=mysqli_query($con,$sql2);								
-									$numero = mysqlI_num_rows($result2);
-									?>
+                                <?
+                                $sql2 = "SELECT * from comentarios where entrevista='".$datos['id']."' and revisado='1'";
+                                $result2=mysqli_query($con,$sql2);
+                                $numero = mysqlI_num_rows($result2);
+                                ?>
 								<div style="display: inline;">
 									<?
 									echo "($numero) Comentarios";							
