@@ -8,3 +8,7 @@ body{
     #tabla_principal { display: none; }
     #tabla_principal_movil { display: block; }
 }
+@media (min-width: 361px) {
+    #tabla_principal { display: block; }
+    #tabla_principal_movil { display: none; }
+}
