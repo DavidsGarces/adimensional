@@ -256,7 +256,16 @@
                         ?>
                         Programas con : <b><?=$nombre_autor;?></b>
                         <?
-                    }else{
+                    }elseif(isset($search) and $search!=""){
+                        ?>
+                        <b>(<?=$numero;?>)</b> Programas buscando por: <b><?=$search;?></b>
+                        <?
+                    }elseif(isset($buscar) and $buscar!=""){
+                        ?>
+                        <b>(<?=$numero;?>)</b> Programas buscando por: <b><?=$buscar;?></b>
+                    <?
+                    }
+                    else{
                         ?>
                         <b>(<?=$numero;?>)</b> Programas
                         <?
